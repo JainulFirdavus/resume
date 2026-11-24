@@ -1,0 +1,1044 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Digital Profile</title>
+<meta name="description" content="Mohamed Jainul Firdavus — Full Stack Developer. An interactive digital profile with a live power level, skill stats and mini games.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070b18; --bg2:#0c1226; --panel:rgba(17,25,52,.72); --panel-solid:#111934;
+  --line:rgba(140,170,255,.14); --line-strong:rgba(140,170,255,.28);
+  --text:#e8ecff; --muted:#97a3cc; --dim:#647099;
+  --cyan:#22d3ee; --pink:#f472b6; --lime:#a3e635; --amber:#fbbf24; --violet:#8b5cf6; --red:#fb7185;
+  --radius:18px; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace; --sans:"Space Grotesk",system-ui,-apple-system,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55;overflow-x:hidden;
+  background-image:radial-gradient(1200px 600px at 85% -10%,rgba(139,92,246,.18),transparent 60%),radial-gradient(900px 500px at -10% 30%,rgba(34,211,238,.12),transparent 60%);}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:48px 48px;
+  mask-image:radial-gradient(ellipse at center,#000 30%,transparent 80%)}
+a{color:var(--cyan);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font:inherit;color:inherit}
+.wrap{max-width:1140px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));position:relative;z-index:1}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan)}
+h2{font-size:clamp(28px,4vw,42px);line-height:1.1;margin:8px 0 10px;letter-spacing:-.02em}
+.lead{color:var(--muted);max-width:640px;margin:0 0 32px}
+section{padding:96px 0 40px;position:relative}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+
+/* nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;padding-top:env(safe-area-inset-top,0px);background:rgba(7,11,24,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:20px;height:60px}
+.brand{font-family:var(--mono);font-weight:700;letter-spacing:.04em;color:var(--text)}
+.brand span{color:var(--cyan)}
+.nav-links{display:flex;gap:4px;margin-left:auto}
+.nav-links a{color:var(--muted);font-size:14px;padding:6px 12px;border-radius:999px}
+.nav-links a:hover{color:var(--text);background:rgba(255,255,255,.06);text-decoration:none}
+.pill-power{font-family:var(--mono);font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid rgba(251,191,36,.4);background:rgba(251,191,36,.1);color:var(--amber);white-space:nowrap}
+.xpbar{position:absolute;left:0;bottom:-1px;height:2px;width:0;background:linear-gradient(90deg,var(--cyan),var(--violet),var(--pink));box-shadow:0 0 12px var(--cyan)}
+@media (max-width:760px){.nav-links{display:none}.pill-power{margin-left:auto}}
+
+/* hero */
+.hero{display:flex;align-items:center;padding:110px 0 64px;position:relative;overflow:hidden}
+#constellation{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.hero-grid{display:grid;grid-template-columns:1.25fr .9fr;gap:48px;align-items:center}
+@media (max-width:900px){.hero-grid{grid-template-columns:1fr;gap:36px}}
+.player-tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--lime);border:1px solid rgba(163,230,53,.35);background:rgba(163,230,53,.08);padding:6px 12px;border-radius:999px}
+.player-tag i{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime);animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.25}}
+.hero h1{font-size:clamp(40px,7vw,78px);line-height:.98;margin:18px 0 14px;letter-spacing:-.035em}
+.hero h1 .grad{background:linear-gradient(100deg,var(--cyan),var(--violet) 55%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.typed{font-family:var(--mono);font-size:clamp(16px,2.2vw,20px);color:var(--muted);min-height:1.6em}
+.typed b{color:var(--text);font-weight:600}
+.caret{display:inline-block;width:10px;height:1.1em;background:var(--cyan);vertical-align:-3px;margin-left:3px;animation:blink 1s steps(1) infinite}
+.hero p.bio{color:var(--muted);max-width:560px;margin:18px 0 26px}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:560px}
+.stat{padding:14px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.stat b{display:block;font-size:28px;line-height:1;font-family:var(--mono)}
+.stat span{font-size:12px;color:var(--muted)}
+@media (max-width:520px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;font-weight:600;border:1px solid var(--line-strong);background:rgba(255,255,255,.04);cursor:pointer;transition:transform .15s,background .15s,box-shadow .15s;color:var(--text)}
+.btn:hover{transform:translateY(-2px);text-decoration:none;background:rgba(255,255,255,.08)}
+.btn.primary{background:linear-gradient(100deg,var(--cyan),var(--violet));border:0;color:#050816;box-shadow:0 8px 30px rgba(34,211,238,.3)}
+.btn.primary:hover{box-shadow:0 10px 40px rgba(139,92,246,.45)}
+
+.gauge-card{padding:28px;text-align:center;position:relative}
+.gauge{position:relative;width:min(300px,100%);margin:0 auto;aspect-ratio:1}
+.gauge svg{width:100%;height:100%;transform:rotate(135deg)}
+.gauge .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gauge .label{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--muted)}
+.gauge .num{font-family:var(--mono);font-size:64px;font-weight:700;line-height:1;margin:6px 0;text-shadow:0 0 30px rgba(251,191,36,.45);color:var(--amber)}
+.gauge .max{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.rank-badge{display:inline-block;margin-top:12px;font-family:var(--mono);font-weight:700;letter-spacing:.16em;font-size:13px;padding:8px 16px;border-radius:999px;color:#050816;background:linear-gradient(100deg,var(--amber),var(--pink))}
+.gauge-note{font-size:13px;color:var(--muted);margin-top:14px}
+.gauge-note a{cursor:pointer}
+
+/* character sheet */
+.sheet{display:grid;grid-template-columns:1fr 1.1fr;gap:24px}
+@media (max-width:900px){.sheet{grid-template-columns:1fr}}
+.radar-box{padding:20px}
+.radar-box svg{width:100%;height:auto;display:block;overflow:visible}
+.radar-poly{transform-origin:200px 200px}
+.in .radar-poly{animation:radarIn 1.4s cubic-bezier(.2,.9,.2,1.1) both}
+@keyframes radarIn{from{transform:scale(0)}}
+.in .radar-dot{animation:fadeIn .4s 1.2s both}
+@keyframes fadeIn{from{opacity:0}}
+.attrs{padding:22px;display:flex;flex-direction:column;gap:16px}
+.attr{cursor:default}
+.attr-top{display:flex;align-items:baseline;gap:10px}
+.attr-code{font-family:var(--mono);font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;background:rgba(255,255,255,.06);color:var(--muted)}
+.attr-name{font-weight:600}
+.attr-val{margin-left:auto;font-family:var(--mono);font-weight:700}
+.bar{height:10px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:7px}
+.bar i{display:block;height:100%;border-radius:inherit;transform-origin:left center}
+.in .bar i{animation:grow 1.4s cubic-bezier(.2,.9,.2,1) both}
+@keyframes grow{from{transform:scaleX(0)}}
+.attr-ev{font-size:12px;color:var(--dim);margin-top:5px;font-family:var(--mono)}
+
+/* inventory */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.chip-btn{padding:7px 14px;border-radius:999px;border:1px solid var(--line-strong);background:transparent;color:var(--muted);cursor:pointer;font-size:14px}
+.chip-btn[aria-pressed="true"]{background:var(--text);color:#050816;border-color:var(--text)}
+.inv{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.item{padding:14px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.03);transition:transform .2s,border-color .2s,box-shadow .2s;position:relative;overflow:hidden}
+.item:hover{transform:translateY(-4px);border-color:var(--c);box-shadow:0 10px 30px -10px var(--c)}
+.item .nm{font-weight:600;font-size:15px}
+.item .lv{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--c)}
+.item .yrs{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px}
+.item .bar{height:6px;margin-top:10px}
+.item .bar i{background:var(--c)}
+.item.hide{display:none}
+
+/* campaign */
+.campaign{position:relative;padding-left:34px}
+.campaign::before{content:"";position:absolute;left:11px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.track-fill{position:absolute;left:11px;top:6px;width:2px;height:0;background:linear-gradient(var(--cyan),var(--violet),var(--pink));box-shadow:0 0 12px var(--cyan)}
+.lvl{position:relative;margin-bottom:22px}
+.lvl.pending.in{animation:rise .7s ease-out both}
+.lvl .node{position:absolute;left:-34px;top:22px;width:24px;height:24px;border-radius:50%;border:2px solid var(--line-strong);background:var(--bg);display:grid;place-items:center;font-size:11px;font-family:var(--mono);font-weight:700;color:var(--dim);transition:all .5s}
+.lvl.in .node{border-color:var(--cyan);color:#050816;background:var(--cyan);box-shadow:0 0 18px var(--cyan)}
+.lvl-card{padding:22px}
+.lvl-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.lvl-tag{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--cyan)}
+.lvl-head h3{margin:0;font-size:22px;flex-basis:100%}
+.lvl-role{color:var(--muted)}
+.lvl-dates{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.xp{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--lime);border:1px solid rgba(163,230,53,.35);padding:3px 9px;border-radius:999px}
+.lvl-card p{color:var(--muted);margin:12px 0}
+.quests{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:14px 0}
+.quest{padding:14px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.025)}
+.quest b{font-size:15px}
+.quest .qtag{font-size:12px;color:var(--pink);font-family:var(--mono)}
+.quest p{font-size:13.5px;margin:8px 0 6px}
+.quest ul{margin:6px 0 0;padding-left:18px;font-size:13px;color:var(--muted)}
+.team{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.boss{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:12px;background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.25);font-size:14px;margin-top:6px}
+.boss span{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--pink);white-space:nowrap;padding-top:2px}
+.techs{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.techs em{font-style:normal;font-family:var(--mono);font-size:11.5px;padding:3px 8px;border-radius:6px;background:rgba(34,211,238,.08);color:#9be8f5;border:1px solid rgba(34,211,238,.18)}
+
+/* arcade */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tab{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.03);cursor:pointer;text-align:left;transition:border-color .2s,background .2s}
+.tab:hover{border-color:var(--line-strong)}
+.tab[aria-selected="true"]{border-color:var(--cyan);background:rgba(34,211,238,.08)}
+.tab .ti{font-size:22px}
+.tab b{display:block;font-size:15px}
+.tab small{color:var(--muted);font-family:var(--mono);font-size:11px}
+.game{display:none}
+.game.active{display:block}
+.stage{position:relative;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line-strong);background:#0a1024}
+canvas.play{display:block;width:100%;max-width:calc(72vh * 5 / 3);margin:0 auto;aspect-ratio:800/480;touch-action:none;cursor:none}
+.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px;background:rgba(7,11,24,.78);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:5}
+.overlay[hidden]{display:none}
+.overlay h3{font-size:clamp(22px,3.4vw,32px);margin:0 0 8px}
+.overlay p{color:var(--muted);max-width:480px;margin:0 0 18px;font-size:14.5px}
+.overlay .res{font-family:var(--mono);font-size:15px;margin-bottom:14px;color:var(--text)}
+.overlay .res b{color:var(--amber)}
+.game-meta{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.game-meta b{color:var(--amber)}
+
+.smash-hud{display:flex;justify-content:space-between;padding:14px 18px;font-family:var(--mono);font-size:14px;border-bottom:1px solid var(--line)}
+.smash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:18px;min-height:340px}
+@media (max-width:560px){.smash-grid{grid-template-columns:repeat(3,1fr)}}
+.svc{position:relative;border-radius:14px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));min-height:92px;cursor:crosshair;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:10px 6px;overflow:hidden;transition:border-color .15s,background .15s}
+.svc .sn{font-family:var(--mono);font-size:11px;color:var(--dim)}
+.svc .led{position:absolute;top:10px;left:10px;width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px var(--lime)}
+.svc .critter{position:absolute;top:50%;left:50%;font-size:36px;transform:translate(-50%,-60%) scale(0);transition:transform .14s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
+.svc.bug{border-color:rgba(251,113,133,.6);background:rgba(251,113,133,.08)}
+.svc.bug .led{background:var(--red);box-shadow:0 0 10px var(--red)}
+.svc.gold{border-color:rgba(251,191,36,.7);background:rgba(251,191,36,.1)}
+.svc.bug .critter,.svc.gold .critter{transform:translate(-50%,-60%) scale(1)}
+.svc.hit{animation:hit .3s}
+@keyframes hit{30%{background:rgba(163,230,53,.25);border-color:var(--lime)}}
+.svc .fx{position:absolute;top:30%;left:50%;transform:translateX(-50%);font-family:var(--mono);font-weight:700;color:var(--lime);pointer-events:none;animation:floatUp .7s forwards}
+@keyframes floatUp{to{transform:translate(-50%,-34px);opacity:0}}
+
+.match-hud{display:flex;justify-content:space-between;padding:14px 18px;font-family:var(--mono);font-size:14px;border-bottom:1px solid var(--line)}
+.match-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:18px}
+@media (max-width:560px){.match-grid{grid-template-columns:repeat(3,1fr)}}
+.card{perspective:800px;min-height:110px;cursor:pointer;border:0;background:none;padding:0}
+.card .in3d{position:relative;width:100%;height:100%;min-height:110px;transition:transform .5s;transform-style:preserve-3d}
+.card.flip .in3d,.card.done .in3d{transform:rotateY(180deg)}
+.card .f,.card .b{position:absolute;inset:0;border-radius:14px;display:flex;align-items:center;justify-content:center;padding:10px;backface-visibility:hidden;-webkit-backface-visibility:hidden;text-align:center}
+.card .f{border:1px solid var(--line-strong);background:repeating-linear-gradient(45deg,rgba(139,92,246,.12) 0 10px,rgba(34,211,238,.06) 10px 20px);font-family:var(--mono);font-size:26px;color:var(--muted)}
+.card .b{transform:rotateY(180deg);font-size:13.5px;font-weight:600;line-height:1.3}
+.card .b.tech{background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.45);color:#aef0fb;font-family:var(--mono);font-size:15px}
+.card .b.proj{background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.45);color:#fbd0e6}
+.card.done .b{box-shadow:0 0 22px -4px var(--lime);border-color:var(--lime)}
+.card:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:14px}
+
+/* achievements */
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.ach{display:flex;gap:14px;align-items:center;padding:16px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.03);transition:all .4s}
+.ach .ic{flex:none;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:24px;background:rgba(255,255,255,.05);filter:grayscale(1);opacity:.45;transition:all .4s}
+.ach b{display:block;font-size:14.5px}
+.ach small{color:var(--muted);font-size:12.5px;line-height:1.35;display:block}
+.ach.on{border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.06)}
+.ach.on .ic{filter:none;opacity:1;background:rgba(251,191,36,.16);box-shadow:0 0 20px -4px var(--amber)}
+.ach .st{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--dim);margin-top:3px}
+.ach.on .st{color:var(--amber)}
+
+/* report */
+.report{padding:32px;display:grid;grid-template-columns:.9fr 1.1fr;gap:36px;align-items:center}
+@media (max-width:860px){.report{grid-template-columns:1fr;padding:22px}}
+.emblem{text-align:center}
+.emblem .hex{width:180px;height:200px;margin:0 auto;display:grid;place-items:center;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:linear-gradient(150deg,var(--amber),var(--pink) 60%,var(--violet));position:relative}
+.emblem .hex::after{content:"";position:absolute;inset:4px;clip-path:inherit;background:var(--panel-solid)}
+.emblem .hex div{position:relative;z-index:1;font-family:var(--mono)}
+.emblem .hex .r{font-size:13px;letter-spacing:.2em;color:var(--muted)}
+.emblem .hex .p{font-size:46px;font-weight:700;color:var(--amber);line-height:1.1}
+.emblem h3{font-size:30px;margin:16px 0 4px;letter-spacing:-.02em}
+.emblem .verdict{color:var(--muted);font-size:14.5px;max-width:380px;margin:0 auto}
+.rows{display:flex;flex-direction:column;gap:12px}
+.row{display:grid;grid-template-columns:160px 1fr 44px;gap:12px;align-items:center;font-size:14px}
+@media (max-width:480px){.row{grid-template-columns:110px 1fr 38px;font-size:13px}}
+.row .bar{margin:0;height:8px}
+.row .v{font-family:var(--mono);font-weight:700;text-align:right}
+.insights{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+@media (max-width:560px){.insights{grid-template-columns:1fr}}
+.ins{padding:14px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03);font-size:13.5px;color:var(--muted)}
+.ins b{display:block;color:var(--text);font-size:14px;margin-bottom:4px}
+
+footer{padding:60px 0 50px;text-align:center;color:var(--muted)}
+.contact{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:20px 0}
+.toast-box{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:80;display:flex;flex-direction:column;gap:10px;max-width:min(340px,calc(100vw - 32px))}
+.toast{display:flex;gap:12px;align-items:center;padding:12px 16px;border-radius:14px;background:var(--panel-solid);border:1px solid rgba(251,191,36,.5);box-shadow:0 12px 40px rgba(0,0,0,.5),0 0 30px -10px var(--amber);animation:tin .4s cubic-bezier(.2,1.4,.4,1)}
+.toast .ic{font-size:26px}
+.toast small{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--amber)}
+@keyframes tin{from{transform:translateY(30px) scale(.9);opacity:0}}
+.reveal.pending.in{animation:rise .8s ease-out both}
+@keyframes rise{from{opacity:0;transform:translateY(28px)}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;transition-duration:.001s!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+
+<nav class="nav" aria-label="Main">
+  <div class="wrap">
+    <a class="brand" href="#top">MJF<span>.profile</span></a>
+    <div class="nav-links">
+      <a href="#stats">Stats</a><a href="#skills">Skills</a><a href="#campaign">Career</a><a href="#arcade">Arcade</a><a href="#report">Report</a>
+    </div>
+    <span class="pill-power" title="Live power level">⚡ <span id="navPower">0</span></span>
+  </div>
+  <div class="xpbar" id="xpbar"></div>
+</nav>
+
+<header class="hero" id="top">
+  <canvas id="constellation" aria-hidden="true"></canvas>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="player-tag"><i></i>PLAYER 1 · ONLINE · KUALA LUMPUR</span>
+      <h1>Mohamed Jainul<br><span class="grad">Firdavus</span></h1>
+      <div class="typed" aria-live="polite"><span class="mono">&gt; class:</span> <b id="typed"></b><span class="caret"></span></div>
+      <p class="bio">Full Stack Developer with 10+ years building scalable web apps and microservices with JavaScript, TypeScript, Node.js, NestJS and React, backed by MongoDB, PostgreSQL and Redis. Hands-on with AWS, Terraform, Jenkins, real-time systems and payment gateways.</p>
+      <div class="stat-row">
+        <div class="stat"><b data-count="yrs">0</b><span>years in play</span></div>
+        <div class="stat"><b data-count="cos">0</b><span>companies</span></div>
+        <div class="stat"><b data-count="proj">0</b><span>projects shipped</span></div>
+        <div class="stat"><b data-count="tech">0</b><span>technologies</span></div>
+      </div>
+      <div class="cta">
+        <a class="btn primary" href="#arcade">▶ Play &amp; boost my power</a>
+        <a class="btn" href="#report">See strength report</a>
+      </div>
+    </div>
+    <div class="panel gauge-card">
+      <div class="gauge">
+        <svg viewBox="0 0 300 300" aria-hidden="true">
+          <defs>
+            <linearGradient id="gg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#22d3ee"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#fbbf24"/>
+            </linearGradient>
+          </defs>
+          <circle cx="150" cy="150" r="124" fill="none" stroke="rgba(140,170,255,.12)" stroke-width="18" stroke-linecap="round" id="gTrack"/>
+          <circle cx="150" cy="150" r="124" fill="none" stroke="url(#gg)" stroke-width="18" stroke-linecap="round" id="gFill" style="filter:drop-shadow(0 0 10px rgba(34,211,238,.5))"/>
+          <g id="gTicks"></g>
+        </svg>
+        <div class="center">
+          <div class="label">POWER LEVEL</div>
+          <div class="num" id="gNum">0</div>
+          <div class="max">/ 1000</div>
+        </div>
+      </div>
+      <div class="rank-badge" id="gRank">CALCULATING…</div>
+      <p class="gauge-note">Computed live from resume data: years, skill depth and team scale. <a href="#arcade">Win arcade games</a> to add bonus power.</p>
+    </div>
+  </div>
+</header>
+
+<main>
+<section id="stats">
+  <div class="wrap">
+    <div class="eyebrow">01 · Character sheet</div>
+    <h2>Attribute stats</h2>
+    <p class="lead">Each attribute is scored from how many years each skill was used across real jobs. Hover a stat to see the evidence behind it.</p>
+    <div class="sheet reveal" id="sheet">
+      <div class="panel radar-box"><svg id="radar" viewBox="0 0 400 400" role="img" aria-label="Radar chart of attribute scores"></svg></div>
+      <div class="panel attrs" id="attrs"></div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="eyebrow">02 · Inventory</div>
+    <h2>Skill inventory</h2>
+    <p class="lead">Every tool earned on the job. Level = years of hands-on use, worked out from the career timeline.</p>
+    <div class="filters" id="filters" role="group" aria-label="Filter skills"></div>
+    <div class="inv" id="inv"></div>
+  </div>
+</section>
+
+<section id="campaign">
+  <div class="wrap">
+    <div class="eyebrow">03 · Campaign mode</div>
+    <h2>Career levels unlocked</h2>
+    <p class="lead">Scroll to play through the career. Each level earns XP for time served and ends with a boss that was beaten.</p>
+    <div class="campaign" id="camp"><div class="track-fill" id="trackFill"></div></div>
+  </div>
+</section>
+
+<section id="arcade">
+  <div class="wrap">
+    <div class="eyebrow">04 · Arcade</div>
+    <h2>Play to prove it</h2>
+    <p class="lead">Three mini games built from the resume. Your best run in each adds up to <b>+50</b> bonus power to the profile.</p>
+    <div class="tabs" role="tablist" aria-label="Games">
+      <button class="tab" role="tab" aria-selected="true" data-game="catcher"><span class="ti">🧲</span><span><b>Skill Catcher</b><small id="best-catcher">best +0</small></span></button>
+      <button class="tab" role="tab" aria-selected="false" data-game="smash"><span class="ti">🐛</span><span><b>Bug Smash</b><small id="best-smash">best +0</small></span></button>
+      <button class="tab" role="tab" aria-selected="false" data-game="match"><span class="ti">🧠</span><span><b>Stack Match</b><small id="best-match">best +0</small></span></button>
+    </div>
+
+    <div class="game active" id="game-catcher" role="tabpanel">
+      <div class="stage">
+        <canvas class="play" id="catcherCv" aria-label="Skill Catcher game"></canvas>
+        <div class="overlay" id="catcherOv">
+          <h3>🧲 Skill Catcher</h3>
+          <p>Catch falling skills with the <b>&lt;/&gt;</b> paddle. Dodge 🐛 bugs, grab ☕ coffee for an extra life. Chain catches for combo points. 45 seconds.</p>
+          <div class="res" hidden></div>
+          <button class="btn primary" data-start="catcher">Start game</button>
+        </div>
+      </div>
+      <div class="game-meta"><span>Move: mouse / touch / ← →</span><span>Bonus = score ÷ 8 (max 50)</span></div>
+    </div>
+
+    <div class="game" id="game-smash" role="tabpanel">
+      <div class="stage">
+        <div class="smash-hud"><span>Score <b id="smScore">0</b></span><span>⏱ <b id="smTime">30</b>s</span><span>Incidents <b id="smMiss">0</b></span></div>
+        <div class="smash-grid" id="smGrid"></div>
+        <div class="overlay" id="smashOv">
+          <h3>🐛 Bug Smash</h3>
+          <p>Production support simulator. Bugs pop up on live services. Click them before they escape. Golden ⭐ features are worth extra. 30 seconds.</p>
+          <div class="res" hidden></div>
+          <button class="btn primary" data-start="smash">Start shift</button>
+        </div>
+      </div>
+      <div class="game-meta"><span>Click / tap bugs</span><span>Bonus = score ÷ 6 (max 50)</span></div>
+    </div>
+
+    <div class="game" id="game-match" role="tabpanel">
+      <div class="stage">
+        <div class="match-hud"><span>Moves <b id="mMoves">0</b></span><span>Pairs <b id="mPairs">0</b>/6</span><span>⏱ <b id="mTime">0</b>s</span></div>
+        <div class="match-grid" id="mGrid"></div>
+        <div class="overlay" id="matchOv">
+          <h3>🧠 Stack Match</h3>
+          <p>Pair each <span style="color:var(--cyan)">technology</span> with the <span style="color:var(--pink)">real project</span> where it was used. Fewer moves = more power.</p>
+          <div class="res" hidden></div>
+          <button class="btn primary" data-start="match">Deal cards</button>
+        </div>
+      </div>
+      <div class="game-meta"><span>6 pairs</span><span>Bonus = 50 − 4 per move over 6 (min 10)</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="achievements">
+  <div class="wrap">
+    <div class="eyebrow">05 · Trophies</div>
+    <h2>Achievements</h2>
+    <p class="lead">Unlocked by the career itself, plus a few you can only earn in the arcade.</p>
+    <div class="ach-grid" id="ach"></div>
+  </div>
+</section>
+
+<section id="report">
+  <div class="wrap">
+    <div class="eyebrow">06 · Final verdict</div>
+    <h2>How strong is this developer?</h2>
+    <p class="lead">The full breakdown behind the power level. It updates live as arcade bonuses come in.</p>
+    <div class="panel report reveal">
+      <div class="emblem">
+        <div class="hex"><div><div class="r">POWER</div><div class="p" id="rPower">0</div><div class="r">/ 1000</div></div></div>
+        <h3 id="rRank">—</h3>
+        <p class="verdict" id="rVerdict"></p>
+      </div>
+      <div>
+        <div class="rows" id="rRows"></div>
+        <div class="insights" id="rIns"></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="eyebrow">Player 2 has entered?</div>
+    <h2>Let's build something.</h2>
+    <div class="contact">
+      <span class="btn primary" style="user-select:all;cursor:text" id="email">jainulfirdavus@gmail.com</span>
+      <button class="btn" id="copyEmail" type="button">Copy email</button>
+      <a class="btn" href="https://github.com/jainulfirdavus" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+    <p class="mono" style="font-size:12.5px">MCA &amp; B.Sc Computer Science · Pondicherry University · English (professional) · Tamil (native)</p>
+    <button class="btn" id="resetBtn" style="margin-top:14px;font-size:13px;padding:8px 14px">↺ Reset arcade progress</button>
+  </div>
+</footer>
+
+<div class="toast-box" id="toasts" aria-live="polite"></div>
+
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const rand = (a, b) => a + Math.random() * (b - a);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================= RESUME DATA ================= */
+const JOBS = [
+  { id:'casperon', company:'Casperon Technologies', role:'MEAN Stack Developer', start:'2016-05', end:'2020-02',
+    summary:'Built reusable, testable web applications with AngularJS, Node.js and Express.js.',
+    boss:'Integrated three payment gateways (PayPal, Stripe, Razorpay) and fixed production issues on a live marketplace.',
+    projects:[
+      { name:'HandyforAll', tag:'On-demand home services', team:15, desc:'Book cleaning, moving and handyman work by location, track the tasker in real time and pay online. Admin dashboard for consumers, taskers, jobs, subscriptions, coupons and earnings.',
+        wins:['Coding, code review and unit testing','Payment gateways: PayPal, Stripe, Razorpay','Performance tuning and production fixes'] },
+      { name:'Scimbo', tag:'Real-time messaging', team:4, desc:'Maintained and enhanced the web view and admin dashboard.' },
+      { name:'Dinedoo', tag:'Food ordering & delivery', team:4, desc:'Location-based search, cart and live order tracking.' },
+      { name:'CMS', tag:'Content management system', team:5, desc:'Content management platform.' }
+    ],
+    tech:['JavaScript','Node.js','Express','AngularJS','Socket.IO','MongoDB','HTML5/CSS3','Payment Gateways','REST APIs','Git'] },
+  { id:'innov', company:'Innovations App', role:'MEAN Stack Developer', start:'2020-03', end:'2021-04',
+    summary:'Developed web applications with AngularJS, Node.js, Express.js and Socket.IO, and provided JSON APIs for iOS and Android apps.',
+    boss:'Shipped live audio and video calling with WebRTC, TURN/STUN and AppRTC.',
+    projects:[
+      { name:'Sanad', tag:'Messaging application', team:5, desc:'Live chat, media sharing, group messaging, and audio and video calls.',
+        wins:['Real-time admin dashboard with REST APIs and Socket.IO','JSON API support for the mobile team','Database and server maintenance'] }
+    ],
+    tech:['JavaScript','Node.js','Express','AngularJS','Socket.IO','WebRTC','MongoDB','REST APIs','Git','Trello'] },
+  { id:'photon', company:'Photon InfoTech', role:'Full Stack Developer', start:'2021-05', end:'2022-09',
+    summary:'Developed web applications with React.js, Node.js and Express.js, maintained AWS services (EC2, S3, EBS, DocumentDB, CloudFront), documented APIs with Swagger and tested with Mocha.',
+    boss:'Tuned performance to cut execution time and memory usage on a live e-commerce platform.',
+    projects:[
+      { name:"M&M's Configurator", tag:'E-commerce', team:5, desc:'Customers design and buy personalised chocolates with their own colours, photos, clipart and text, plus gifts and accessories.',
+        wins:['REST APIs and JSON services for the mobile team','Bitbucket, DB and server maintenance, AWS backups','Maintained the React.js front end'] }
+    ],
+    tech:['JavaScript','Node.js','Express','React','MongoDB','DocumentDB','AWS','Swagger','Mocha','Microservices','REST APIs','HTML5/CSS3','Bitbucket'] },
+  { id:'tcs', company:'Tata Consultancy Services', role:'IT Analyst (C2) · Full Stack Developer', start:'2023-01', end:null,
+    summary:'Lead full-stack development: microservices with NestJS, TypeScript and Java, database optimisation with PostgreSQL and Redis, infrastructure and CI/CD with Terraform and Jenkins, front ends with React and Vite.',
+    boss:'Migrated the Java/Groovy code base of a live reinsurance platform to Node.js, NestJS and TypeScript.',
+    projects:[
+      { name:'ARIUS', tag:'Reinsurance · Japan', team:10, desc:'Reinsurance application for insurance companies in Japan, built from scratch, then migrated from Java/Groovy to NestJS.',
+        wins:['Built from scratch in a 10-member team','Java/Groovy → NestJS + TypeScript migration (5-member team)','Customised features from user feedback'] },
+      { name:'ACF', tag:'Reinsurance · Asia region', team:20, desc:'All services built from scratch as NestJS microservices with a React front end, replacing a legacy Groovy code base.',
+        wins:['Microservices built in a 20-member team','End-to-end ownership incl. production support','Enhancements from user proposals'] }
+    ],
+    tech:['JavaScript','TypeScript','Node.js','NestJS','Java','Groovy','React','Vite','PostgreSQL','SQL','Redis','Terraform','Jenkins','CI/CD','AWS','Docker','Microservices','REST APIs','Git'] }
+];
+const EDUCATION = [
+  { deg:'B.Sc. Computer Science', inst:'R.V.S. College of Arts and Science, Pondicherry University, Karaikal', years:'2009 – 2012' },
+  { deg:'Master of Computer Applications (MCA)', inst:'Bharathiyar College of Engineering and Technology, Pondicherry University, Karaikal', years:'2012 – 2015' }
+];
+const CATS = {
+  backend: { label:'Backend', code:'STR', color:'#22d3ee', skills:['Node.js','Express','NestJS','REST APIs','Microservices','Java'] },
+  frontend:{ label:'Frontend', code:'DEX', color:'#f472b6', skills:['React','AngularJS','Vite','HTML5/CSS3'] },
+  data:    { label:'Data', code:'CON', color:'#a3e635', skills:['MongoDB','PostgreSQL','Redis','SQL','DocumentDB'] },
+  cloud:   { label:'Cloud & DevOps', code:'WIS', color:'#8b5cf6', skills:['AWS','Terraform','Jenkins','CI/CD','Docker'] },
+  realtime:{ label:'Real-time & APIs', code:'AGI', color:'#fbbf24', skills:['Socket.IO','WebRTC','Payment Gateways','Swagger'] },
+  team:    { label:'Teamwork', code:'CHA', color:'#fb7185', skills:[] }
+};
+const EXTRA_CATS = { lang:{ label:'Languages', color:'#38bdf8', skills:['JavaScript','TypeScript','Groovy'] },
+                     tools:{ label:'Tools', color:'#94a3b8', skills:['Git','Bitbucket','Mocha','Trello'] } };
+
+/* ================= SCORING ================= */
+const now = new Date();
+const ym = s => { const [y, m] = s.split('-').map(Number); return y * 12 + (m - 1); };
+const nowYM = now.getFullYear() * 12 + now.getMonth();
+const months = j => (j.end ? ym(j.end) : nowYM) - ym(j.start) + 1;
+const totalMonths = JOBS.reduce((a, j) => a + months(j), 0);
+const totalYears = totalMonths / 12;
+
+const skillYears = {};
+JOBS.forEach(j => j.tech.forEach(t => { skillYears[t] = (skillYears[t] || 0) + months(j) / 12; }));
+const catOf = {};
+Object.entries({ ...CATS, ...EXTRA_CATS }).forEach(([k, c]) => c.skills.forEach(s => catOf[s] = k));
+
+const allProjects = JOBS.flatMap(j => j.projects);
+const teamTotal = allProjects.reduce((a, p) => a + p.team, 0);
+const sat = (y, k) => Math.min(99, Math.round(100 * (1 - Math.exp(-y / k))));
+const catScore = {};
+Object.entries(CATS).forEach(([k, c]) => {
+  catScore[k] = k === 'team' ? sat(teamTotal, 35) : sat(c.skills.reduce((a, s) => a + (skillYears[s] || 0), 0), 9);
+});
+const expScore = Math.round(Math.min(totalYears, 12) / 12 * 100);
+const catAvg = Object.values(catScore).reduce((a, b) => a + b, 0) / Object.keys(catScore).length;
+const BASE_POWER = Math.round(10 * (0.3 * expScore + 0.7 * catAvg));
+const RANKS = [[0,'ROOKIE'],[500,'ADEPT'],[650,'EXPERT'],[800,'MASTER'],[950,'LEGEND']];
+const rankOf = p => RANKS.filter(r => p >= r[0]).pop()[1];
+
+/* ================= STORAGE ================= */
+const KEY = 'mjf-digital-profile-v1';
+let save = { best:{ catcher:0, smash:0, match:0 }, ach:{} };
+try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.best) save = { best:{ ...save.best, ...s.best }, ach:s.ach || {} }; } catch (e) {}
+const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(save)); } catch (e) {} };
+const bonus = () => Object.values(save.best).reduce((a, b) => a + b, 0);
+const power = () => Math.min(1000, BASE_POWER + bonus());
+
+/* ================= TOASTS ================= */
+function toast(icon, title, sub) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span class="ic">${icon}</span><span><small>${sub}</small><b>${title}</b></span>`;
+  $('#toasts').appendChild(t);
+  setTimeout(() => { t.style.transition = 'opacity .4s, transform .4s'; t.style.opacity = 0; t.style.transform = 'translateX(30px)'; }, 3200);
+  setTimeout(() => t.remove(), 3700);
+}
+
+/* ================= HERO ================= */
+const roles = ['Full Stack Developer', 'NestJS Microservice Builder', 'React Craftsman', 'Legacy Migration Specialist', 'Production Firefighter'];
+(function typer() {
+  const el = $('#typed');
+  if (reduced) { el.textContent = roles[0]; return; }
+  let ri = 0, ci = 0, del = false;
+  (function tick() {
+    const w = roles[ri];
+    ci += del ? -1 : 1;
+    el.textContent = w.slice(0, ci);
+    let d = del ? 35 : 70;
+    if (!del && ci === w.length) { del = true; d = 1600; }
+    else if (del && ci === 0) { del = false; ri = (ri + 1) % roles.length; d = 300; }
+    setTimeout(tick, d);
+  })();
+})();
+
+const COUNTS = { yrs: Math.floor(totalYears), cos: JOBS.length, proj: allProjects.length, tech: Object.keys(skillYears).length };
+function countUp(el, to, dur = 1400, suffix = '') {
+  if (reduced) { el.textContent = to + suffix; return; }
+  const t0 = performance.now(), from = +el.dataset.cur || 0;
+  (function f(t) {
+    const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+    const v = Math.round(from + (to - from) * e);
+    el.textContent = v + suffix; el.dataset.cur = v;
+    if (p < 1) requestAnimationFrame(f);
+  })(t0);
+}
+$$('[data-count]').forEach(el => countUp(el, COUNTS[el.dataset.count], 1600, el.dataset.count === 'yrs' || el.dataset.count === 'proj' ? '+' : ''));
+
+// gauge
+const ARC = 0.75, R = 124, CIRC = 2 * Math.PI * R;
+$('#gTrack').setAttribute('stroke-dasharray', `${CIRC * ARC} ${CIRC}`);
+const gFill = $('#gFill');
+gFill.setAttribute('stroke-dasharray', `0 ${CIRC}`);
+(function ticks() {
+  let s = '';
+  for (let i = 0; i <= 20; i++) {
+    const a = (i / 20) * ARC * 2 * Math.PI, r1 = 100, r2 = i % 5 ? 104 : 108;
+    s += `<line x1="${150 + r1 * Math.cos(a)}" y1="${150 + r1 * Math.sin(a)}" x2="${150 + r2 * Math.cos(a)}" y2="${150 + r2 * Math.sin(a)}" stroke="rgba(140,170,255,${i % 5 ? .25 : .55})" stroke-width="2"/>`;
+  }
+  $('#gTicks').innerHTML = s;
+})();
+let shownPower = 0;
+function renderPower(animate = true) {
+  const p = power();
+  const len = CIRC * ARC * p / 1000;
+  gFill.style.transition = animate && !reduced ? 'stroke-dasharray 1.6s cubic-bezier(.2,.9,.2,1)' : 'none';
+  gFill.setAttribute('stroke-dasharray', `${len} ${CIRC}`);
+  countUp($('#gNum'), p, animate ? 1600 : 1);
+  countUp($('#navPower'), p, animate ? 1600 : 1);
+  countUp($('#rPower'), p, animate ? 1600 : 1);
+  $('#gRank').textContent = `RANK · ${rankOf(p)}`;
+  if (shownPower && p > shownPower && rankOf(p) !== rankOf(shownPower)) toast('🏅', `Rank up: ${rankOf(p)}`, 'NEW RANK');
+  shownPower = p;
+  renderReport();
+  checkAch();
+}
+
+// constellation background
+(function constellation() {
+  const cv = $('#constellation'), ctx = cv.getContext('2d');
+  const labels = ['Node.js','NestJS','React','TypeScript','PostgreSQL','Redis','AWS','Socket.IO','MongoDB','Terraform'];
+  let W, H, pts = [], mouse = { x: -999, y: -999 }, running = true, raf;
+  function size() {
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const n = Math.min(80, Math.round(W * H / 16000));
+    pts = Array.from({ length: n }, (_, i) => ({ x: rand(0, W), y: rand(0, H), vx: rand(-.25, .25), vy: rand(-.25, .25), l: i < labels.length ? labels[i] : null }));
+  }
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of pts) {
+      if (!reduced) { p.x += p.vx; p.y += p.vy; }
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+      const dx = p.x - mouse.x, dy = p.y - mouse.y, d = Math.hypot(dx, dy);
+      if (d < 120 && d > 0) { p.x += dx / d * 1.2; p.y += dy / d * 1.2; }
+    }
+    for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
+      const a = pts[i], b = pts[j], d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d < 140) { ctx.strokeStyle = `rgba(110,160,255,${(1 - d / 140) * .22})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+    }
+    for (const p of pts) {
+      ctx.fillStyle = p.l ? 'rgba(34,211,238,.9)' : 'rgba(150,170,230,.5)';
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.l ? 2.6 : 1.6, 0, 7); ctx.fill();
+      if (p.l) { ctx.fillStyle = 'rgba(150,170,230,.45)'; ctx.font = '11px JetBrains Mono, monospace'; ctx.fillText(p.l, p.x + 6, p.y - 6); }
+    }
+    if (running && !reduced) raf = requestAnimationFrame(draw);
+  }
+  size(); draw();
+  addEventListener('resize', () => { size(); if (reduced || !running) draw(); });
+  cv.parentElement.addEventListener('pointermove', e => { const r = cv.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; });
+  cv.parentElement.addEventListener('pointerleave', () => { mouse.x = mouse.y = -999; });
+  new IntersectionObserver(([e]) => { const was = running; running = e.isIntersecting; if (running && !was && !reduced) { cancelAnimationFrame(raf); draw(); } }).observe(cv);
+})();
+
+/* ================= CHARACTER SHEET ================= */
+(function sheet() {
+  const keys = Object.keys(CATS), N = keys.length, C = 200, RR = 140;
+  const pt = (i, r) => { const a = -Math.PI / 2 + i * 2 * Math.PI / N; return [C + r * Math.cos(a), C + r * Math.sin(a)]; };
+  let s = '<defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22d3ee" stop-opacity=".55"/><stop offset="1" stop-color="#f472b6" stop-opacity=".45"/></linearGradient></defs>';
+  [.25, .5, .75, 1].forEach(f => { s += `<polygon points="${keys.map((_, i) => pt(i, RR * f).join(',')).join(' ')}" fill="none" stroke="rgba(140,170,255,${f === 1 ? .3 : .13})"/>`; });
+  keys.forEach((k, i) => {
+    const [x, y] = pt(i, RR); s += `<line x1="${C}" y1="${C}" x2="${x}" y2="${y}" stroke="rgba(140,170,255,.13)"/>`;
+    const [lx, ly] = pt(i, RR + 30);
+    const anchor = Math.abs(lx - C) < 5 ? 'middle' : lx > C ? 'start' : 'end';
+    s += `<text x="${lx}" y="${ly - 4}" text-anchor="${anchor}" fill="#e8ecff" font-size="13" font-family="Space Grotesk, sans-serif" font-weight="600">${CATS[k].label}</text>`;
+    s += `<text x="${lx}" y="${ly + 12}" text-anchor="${anchor}" fill="${CATS[k].color}" font-size="12" font-family="JetBrains Mono, monospace" font-weight="700">${catScore[k]}</text>`;
+  });
+  const poly = keys.map((k, i) => pt(i, RR * catScore[k] / 100).join(',')).join(' ');
+  s += `<g class="radar-poly"><polygon points="${poly}" fill="url(#rg)" stroke="#22d3ee" stroke-width="2" stroke-linejoin="round"/></g>`;
+  keys.forEach((k, i) => { const [x, y] = pt(i, RR * catScore[k] / 100); s += `<circle class="radar-dot" cx="${x}" cy="${y}" r="5" fill="${CATS[k].color}" stroke="#070b18" stroke-width="2"/>`; });
+  $('#radar').innerHTML = s;
+
+  $('#attrs').innerHTML = keys.map(k => {
+    const c = CATS[k];
+    const ev = k === 'team'
+      ? `${allProjects.length} projects · teams up to ${Math.max(...allProjects.map(p => p.team))} · ${teamTotal} teammates total`
+      : c.skills.filter(x => skillYears[x]).sort((a, b) => skillYears[b] - skillYears[a]).slice(0, 3).map(x => `${x} ${skillYears[x].toFixed(1)}y`).join(' · ');
+    return `<div class="attr" title="${ev}"><div class="attr-top"><span class="attr-code">${c.code}</span><span class="attr-name">${c.label}</span><span class="attr-val" style="color:${c.color}">${catScore[k]}</span></div>
+      <div class="bar"><i style="width:${catScore[k]}%;background:linear-gradient(90deg,${c.color}88,${c.color})"></i></div><div class="attr-ev">${ev}</div></div>`;
+  }).join('');
+})();
+
+/* ================= INVENTORY ================= */
+(function inventory() {
+  const all = { ...CATS, ...EXTRA_CATS };
+  const maxY = Math.max(...Object.values(skillYears));
+  const skills = Object.keys(skillYears).sort((a, b) => skillYears[b] - skillYears[a]);
+  $('#inv').innerHTML = skills.map(s => {
+    const c = all[catOf[s]] || EXTRA_CATS.tools, y = skillYears[s];
+    return `<div class="item" data-cat="${catOf[s] || 'tools'}" style="--c:${c.color}"><span class="lv">LV ${Math.max(1, Math.round(y))}</span>
+      <div class="nm">${s}</div><div class="yrs">${y.toFixed(1)} yrs · ${c.label}</div><div class="bar"><i style="width:${Math.round(y / maxY * 100)}%"></i></div></div>`;
+  }).join('');
+  const cats = [['all', 'All']].concat(Object.entries(all).filter(([k]) => k !== 'team').map(([k, c]) => [k, c.label]));
+  $('#filters').innerHTML = cats.map(([k, l], i) => `<button class="chip-btn" data-f="${k}" aria-pressed="${i === 0}">${l}</button>`).join('');
+  $('#filters').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    $$('#filters button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    $$('#inv .item').forEach(it => it.classList.toggle('hide', b.dataset.f !== 'all' && it.dataset.cat !== b.dataset.f));
+  });
+})();
+
+/* ================= CAMPAIGN ================= */
+(function campaign() {
+  const fmt = s => new Date(+s.slice(0, 4), +s.slice(5) - 1).toLocaleString('en', { month: 'short', year: 'numeric' });
+  const dur = m => { const y = Math.floor(m / 12), r = m % 12; return [y ? `${y} yr` : '', r ? `${r} mo` : ''].filter(Boolean).join(' '); };
+  let h = `<div class="lvl"><div class="node">0</div><div class="panel lvl-card">
+    <div class="lvl-head"><span class="lvl-tag">LEVEL 0 · TRAINING GROUNDS</span><span class="lvl-dates">2009 – 2015</span><h3>Education</h3></div>
+    <div class="quests">${EDUCATION.map(e => `<div class="quest"><span class="qtag">${e.years}</span><br><b>${e.deg}</b><p>${e.inst}</p></div>`).join('')}</div>
+    <div class="boss"><span>UNLOCKED</span><div>Computer science fundamentals, six years deep, before the first job.</div></div></div></div>`;
+  JOBS.forEach((j, i) => {
+    const m = months(j);
+    h += `<div class="lvl"><div class="node">${i + 1}</div><div class="panel lvl-card">
+      <div class="lvl-head"><span class="lvl-tag">LEVEL ${i + 1}${j.end ? '' : ' · CURRENT'}</span><span class="xp">+${(m * 25).toLocaleString()} XP</span>
+      <span class="lvl-dates">${fmt(j.start)} – ${j.end ? fmt(j.end) : 'Present'} · ${dur(m)}</span>
+      <h3>${j.company}</h3><span class="lvl-role">${j.role}</span></div>
+      <p>${j.summary}</p>
+      <div class="quests">${j.projects.map(p => `<div class="quest"><b>${p.name}</b> <span class="team">· 👥 ${p.team}</span><br><span class="qtag">${p.tag}</span><p>${p.desc}</p>${p.wins ? `<ul>${p.wins.map(w => `<li>${w}</li>`).join('')}</ul>` : ''}</div>`).join('')}</div>
+      <div class="boss"><span>BOSS DEFEATED</span><div>${j.boss}</div></div>
+      <div class="techs">${j.tech.map(t => `<em>${t}</em>`).join('')}</div></div></div>`;
+  });
+  $('#camp').insertAdjacentHTML('beforeend', h);
+})();
+
+/* reveal + bars */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  e.target.classList.add('in');
+  io.unobserve(e.target);
+}), { threshold: .15 });
+$$('.reveal, .lvl, #inv, #rRows').forEach(el => {
+  if (!reduced && el.getBoundingClientRect().top > innerHeight) el.classList.add('pending');
+  io.observe(el);
+});
+
+addEventListener('scroll', () => {
+  const max = document.documentElement.scrollHeight - innerHeight;
+  $('#xpbar').style.width = (scrollY / max * 100) + '%';
+  const camp = $('#camp'), r = camp.getBoundingClientRect();
+  $('#trackFill').style.height = clamp(innerHeight * .6 - r.top, 0, r.height - 12) + 'px';
+}, { passive: true });
+
+/* ================= ACHIEVEMENTS ================= */
+const ACH = [
+  { id:'decade', ic:'🗓️', t:'Decade Coder', d:`${totalYears.toFixed(1)} years shipping production code`, on:() => totalYears >= 10 },
+  { id:'migrate', ic:'🔁', t:'Migration Master', d:'Moved a Java/Groovy platform to NestJS + TypeScript', on:() => true },
+  { id:'squad', ic:'👥', t:'Squad of 20', d:'Delivered microservices in a 20-member team', on:() => Math.max(...allProjects.map(p => p.team)) >= 20 },
+  { id:'pay', ic:'💳', t:'Payment Wizard', d:'Integrated PayPal, Stripe and Razorpay', on:() => !!skillYears['Payment Gateways'] },
+  { id:'rt', ic:'📡', t:'Real-time Ranger', d:'Socket.IO chat and WebRTC video calls', on:() => skillYears['Socket.IO'] && skillYears['WebRTC'] },
+  { id:'cloud', ic:'☁️', t:'Cloud Builder', d:'AWS + Terraform + Jenkins pipelines', on:() => skillYears['Terraform'] && skillYears['AWS'] },
+  { id:'stack', ic:'🧬', t:'Stack Shifter', d:'MEAN → MERN → NestJS: evolved with the ecosystem', on:() => skillYears['AngularJS'] && skillYears['React'] && skillYears['NestJS'] },
+  { id:'scholar', ic:'🎓', t:'Scholar', d:'MCA + B.Sc Computer Science', on:() => true },
+  { id:'collector', ic:'🧲', t:'Skill Collector', d:'Catch 25 skills in one Skill Catcher run', game:true },
+  { id:'hunter', ic:'🐛', t:'Bug Hunter', d:'Smash 20 bugs in one Bug Smash shift', game:true },
+  { id:'memory', ic:'🧠', t:'Perfect Recall', d:'Finish Stack Match in 9 moves or fewer', game:true },
+  { id:'legend', ic:'👑', t:'Legend Status', d:'Push the power level to 950+', on:() => power() >= 950, game:true }
+];
+function renderAch() {
+  $('#ach').innerHTML = ACH.map(a => {
+    const on = a.game ? !!save.ach[a.id] : !!a.on();
+    return `<div class="ach ${on ? 'on' : ''}"><div class="ic">${a.ic}</div><div><b>${a.t}</b><small>${a.d}</small><div class="st">${on ? 'UNLOCKED' : 'LOCKED · ARCADE'}</div></div></div>`;
+  }).join('');
+}
+function unlock(id) {
+  if (save.ach[id]) return;
+  save.ach[id] = true; persist();
+  const a = ACH.find(x => x.id === id);
+  toast(a.ic, a.t, 'ACHIEVEMENT UNLOCKED');
+  renderAch();
+}
+function checkAch() { if (power() >= 950) unlock('legend'); renderAch(); }
+
+/* ================= REPORT ================= */
+function renderReport() {
+  const p = power(), rank = rankOf(p);
+  $('#rRank').textContent = rank;
+  const verdicts = {
+    ROOKIE:'Just getting started.', ADEPT:'Solid and growing.', EXPERT:'A dependable senior engineer.',
+    MASTER:`A senior full-stack engineer with a decade of production work. Strongest in backend and microservices, proven across e-commerce, messaging, marketplaces and reinsurance.`,
+    LEGEND:`Top tier. A decade of production delivery across four companies, from MEAN to NestJS microservices, plus arcade skills to prove it.`
+  };
+  $('#rVerdict').textContent = verdicts[rank];
+  const rows = [['Experience', expScore, '#e8ecff']].concat(Object.entries(CATS).map(([k, c]) => [c.label, catScore[k], c.color]));
+  const b = bonus();
+  $('#rRows').innerHTML = rows.map(([l, v, c]) => `<div class="row"><span>${l}</span><div class="bar"><i style="width:${v}%;background:${c}"></i></div><span class="v" style="color:${c}">${v}</span></div>`).join('')
+    + `<div class="row"><span>Arcade bonus</span><div class="bar"><i style="width:${b / 1.5}%;background:linear-gradient(90deg,#fbbf24,#f472b6)"></i></div><span class="v" style="color:#fbbf24">+${b}</span></div>`;
+  const ranked = Object.entries(catScore).sort((a, b) => b[1] - a[1]);
+  const top = ranked[0], low = ranked[ranked.length - 1];
+  const next = RANKS.find(r => r[0] > p);
+  $('#rIns').innerHTML = `
+    <div class="ins"><b>💪 Strongest stat: ${CATS[top[0]].label} (${top[1]})</b>Node.js has been in every job since 2016, with REST APIs and microservices on top.</div>
+    <div class="ins"><b>🎯 Growth quest: ${CATS[low[0]].label} (${low[1]})</b>Strong earlier in the career. Recent real-time or integration work would push this stat up.</div>
+    <div class="ins"><b>📈 Base vs. bonus</b>${BASE_POWER} from the resume, +${b} from the arcade (max +150).</div>
+    <div class="ins"><b>${next ? `⏭ Next rank: ${next[1]}` : '👑 Max rank reached'}</b>${next ? `${next[0] - p} more power needed. Beat your arcade high scores to get there.` : 'Every arcade challenge has been conquered.'}</div>`;
+}
+
+/* ================= ARCADE ================= */
+const ALL_SKILLS = Object.keys(skillYears);
+function finishGame(game, result, bonusVal, resHtml) {
+  const prev = save.best[game];
+  const ov = $(`#${game}Ov`), res = $('.res', ov);
+  res.hidden = false;
+  res.innerHTML = resHtml + `<br>Bonus power: <b>+${bonusVal}</b>${bonusVal > prev ? ' · NEW BEST!' : ` · best +${prev}`}`;
+  $('h3', ov).textContent = 'Game over';
+  $('button', ov).textContent = 'Play again';
+  ov.hidden = false;
+  if (bonusVal > prev) {
+    save.best[game] = bonusVal; persist();
+    toast('⚡', `+${bonusVal - prev} power`, 'NEW HIGH SCORE');
+    renderBest(); renderPower();
+  }
+}
+function renderBest() { Object.entries(save.best).forEach(([g, v]) => $(`#best-${g}`).textContent = `best +${v}`); }
+
+const games = {};
+$$('.tab').forEach(t => t.addEventListener('click', () => {
+  $$('.tab').forEach(x => x.setAttribute('aria-selected', x === t));
+  $$('.game').forEach(g => g.classList.toggle('active', g.id === 'game-' + t.dataset.game));
+  Object.values(games).forEach(g => g.stop && g.stop());
+  const g = games[t.dataset.game]; g.idle && g.idle();
+}));
+$$('[data-start]').forEach(b => b.addEventListener('click', () => { $(`#${b.dataset.start}Ov`).hidden = true; games[b.dataset.start].start(); }));
+
+function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+
+/* ---- Skill Catcher ---- */
+games.catcher = (() => {
+  const cv = $('#catcherCv'), ctx = cv.getContext('2d'), W = 800, H = 480, PW = 130, PY = H - 46;
+  let st = null, raf = 0, last = 0;
+  const keys = { l: false, r: false };
+  function fit() {
+    const dpr = Math.min(2, devicePixelRatio || 1), w = cv.clientWidth || 800;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(w * H / W * dpr);
+    const s = cv.width / W; ctx.setTransform(s, 0, 0, s, 0, 0);
+    if (!st || !st.running) draw();
+  }
+  function reset() { st = { running:true, px:W / 2, tx:W / 2, items:[], pops:[], lives:3, score:0, time:45, t:0, spawn:.4, combo:0, caught:0, shake:0 }; }
+  function spawn() {
+    const r = Math.random(), type = r < .68 ? 'skill' : r < .92 ? 'bug' : 'coffee';
+    const label = type === 'skill' ? pick(ALL_SKILLS) : '';
+    ctx.font = '600 15px JetBrains Mono, monospace';
+    const w = type === 'skill' ? ctx.measureText(label).width + 24 : 34;
+    st.items.push({ type, label, w, x: rand(w / 2 + 8, W - w / 2 - 8), y: -20, vy: 120 + st.t * 3.4 + rand(0, 70) });
+  }
+  function pop(x, y, txt, col) { st.pops.push({ x, y, txt, col, life: 1 }); }
+  function hit(it) {
+    if (it.type === 'skill') { st.combo++; const pts = 10 + Math.min(20, (st.combo - 1) * 2); st.score += pts; st.caught++; pop(it.x, PY - 20, `+${pts}${st.combo > 2 ? ' x' + st.combo : ''}`, '#a3e635'); }
+    else if (it.type === 'bug') { st.lives--; st.combo = 0; st.shake = 10; pop(it.x, PY - 20, '-1 ♥', '#fb7185'); }
+    else { st.lives = Math.min(3, st.lives + 1); st.score += 5; pop(it.x, PY - 20, '☕ +1 ♥', '#fbbf24'); }
+  }
+  function update(dt) {
+    st.t += dt; st.time -= dt;
+    if (keys.l) st.tx -= 640 * dt;
+    if (keys.r) st.tx += 640 * dt;
+    st.tx = clamp(st.tx, PW / 2, W - PW / 2);
+    st.px += (st.tx - st.px) * Math.min(1, dt * 18);
+    st.spawn -= dt;
+    if (st.spawn <= 0) { spawn(); st.spawn = Math.max(.3, .85 - st.t * .012); }
+    for (const it of st.items) {
+      it.y += it.vy * dt;
+      const half = it.type === 'skill' ? it.w / 2 : 16;
+      if (!it.gone && it.y + 12 >= PY && it.y - 12 <= PY + 16 && Math.abs(it.x - st.px) < PW / 2 + half - 6) { it.gone = true; hit(it); }
+      if (!it.gone && it.y > H + 24) { it.gone = true; if (it.type === 'skill') st.combo = 0; }
+    }
+    st.items = st.items.filter(i => !i.gone);
+    st.pops.forEach(p => { p.life -= dt * 1.4; p.y -= 40 * dt; });
+    st.pops = st.pops.filter(p => p.life > 0);
+    st.shake = Math.max(0, st.shake - dt * 40);
+    if (st.time <= 0 || st.lives <= 0) end();
+  }
+  function draw() {
+    ctx.save();
+    ctx.fillStyle = '#0a1024'; ctx.fillRect(0, 0, W, H);
+    if (st && st.shake) ctx.translate(rand(-st.shake, st.shake), rand(-st.shake, st.shake));
+    ctx.strokeStyle = 'rgba(140,170,255,.07)'; ctx.lineWidth = 1;
+    for (let x = 0; x <= W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+    for (let y = 0; y <= H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    if (st) {
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      for (const it of st.items) {
+        if (it.type === 'skill') {
+          ctx.font = '600 15px JetBrains Mono, monospace';
+          rr(ctx, it.x - it.w / 2, it.y - 15, it.w, 30, 15);
+          ctx.fillStyle = 'rgba(34,211,238,.16)'; ctx.fill();
+          ctx.strokeStyle = '#22d3ee'; ctx.lineWidth = 1.5; ctx.stroke();
+          ctx.fillStyle = '#c9f6ff'; ctx.fillText(it.label, it.x, it.y + 1);
+        } else {
+          ctx.font = '30px sans-serif'; ctx.fillText(it.type === 'bug' ? '🐛' : '☕', it.x, it.y);
+        }
+      }
+      const g = ctx.createLinearGradient(st.px - PW / 2, 0, st.px + PW / 2, 0);
+      g.addColorStop(0, '#22d3ee'); g.addColorStop(1, '#8b5cf6');
+      ctx.shadowColor = '#22d3ee'; ctx.shadowBlur = 18;
+      rr(ctx, st.px - PW / 2, PY, PW, 18, 9); ctx.fillStyle = g; ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#050816'; ctx.font = '700 13px JetBrains Mono, monospace'; ctx.fillText('</>', st.px, PY + 10);
+      for (const p of st.pops) { ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.col; ctx.font = '700 18px JetBrains Mono, monospace'; ctx.fillText(p.txt, p.x, p.y); }
+      ctx.globalAlpha = 1;
+      ctx.textAlign = 'left'; ctx.font = '700 18px JetBrains Mono, monospace'; ctx.fillStyle = '#e8ecff';
+      ctx.fillText(`SCORE ${st.score}`, 18, 26);
+      ctx.textAlign = 'center'; ctx.fillStyle = st.time < 10 ? '#fb7185' : '#e8ecff'; ctx.fillText(`${Math.max(0, Math.ceil(st.time))}s`, W / 2, 26);
+      ctx.textAlign = 'right'; ctx.fillStyle = '#fb7185'; ctx.fillText('♥'.repeat(Math.max(0, st.lives)) + '♡'.repeat(3 - Math.max(0, st.lives)), W - 18, 26);
+      if (st.combo > 2) { ctx.textAlign = 'left'; ctx.fillStyle = '#a3e635'; ctx.font = '700 14px JetBrains Mono, monospace'; ctx.fillText(`COMBO x${st.combo}`, 18, 50); }
+    }
+    ctx.restore();
+  }
+  function loop(t) { const dt = Math.min(.05, (t - last) / 1000); last = t; update(dt); if (!st.running) return; draw(); raf = requestAnimationFrame(loop); }
+  function start() { cancelAnimationFrame(raf); fit(); reset(); last = performance.now(); raf = requestAnimationFrame(loop); }
+  function end() {
+    st.running = false; cancelAnimationFrame(raf); draw();
+    if (st.caught >= 25) unlock('collector');
+    finishGame('catcher', st.score, Math.min(50, Math.round(st.score / 8)), `Score <b>${st.score}</b> · ${st.caught} skills caught`);
+  }
+  function stop() { if (st && st.running) { st.running = false; cancelAnimationFrame(raf); const ov = $('#catcherOv'); ov.hidden = false; } }
+  const toX = e => { const r = cv.getBoundingClientRect(); return (e.clientX - r.left) / r.width * W; };
+  cv.addEventListener('pointermove', e => { if (st && st.running) st.tx = toX(e); });
+  cv.addEventListener('pointerdown', e => { if (st && st.running) { st.tx = toX(e); cv.setPointerCapture(e.pointerId); } });
+  addEventListener('keydown', e => {
+    if (!st || !st.running) return;
+    if (['ArrowLeft', 'a', 'A'].includes(e.key)) { keys.l = true; e.preventDefault(); }
+    if (['ArrowRight', 'd', 'D'].includes(e.key)) { keys.r = true; e.preventDefault(); }
+  });
+  addEventListener('keyup', e => {
+    if (['ArrowLeft', 'a', 'A'].includes(e.key)) keys.l = false;
+    if (['ArrowRight', 'd', 'D'].includes(e.key)) keys.r = false;
+  });
+  addEventListener('resize', fit);
+  document.fonts && document.fonts.ready.then(fit);
+  fit();
+  return { start, stop, idle: fit };
+})();
+
+/* ---- Bug Smash ---- */
+games.smash = (() => {
+  const SVCS = ['auth-svc', 'claims-api', 'payments', 'redis-cache', 'gateway', 'react-ui', 'pg-primary', 'socket-hub', 'jenkins', 'terraform', 's3-store', 'nest-core'];
+  const grid = $('#smGrid');
+  grid.innerHTML = SVCS.map((s, i) => `<button class="svc" data-i="${i}" aria-label="${s}"><span class="led"></span><span class="critter"></span><span class="sn">${s}</span></button>`).join('');
+  const tiles = $$('.svc', grid);
+  let st = null, raf = 0;
+  function setTile(i, kind) {
+    const t = tiles[i]; t.classList.remove('bug', 'gold');
+    if (kind) { t.classList.add(kind); $('.critter', t).textContent = kind === 'gold' ? '⭐' : pick(['🐛', '🐞', '🪲']); }
+  }
+  function fx(i, txt, col) { const s = document.createElement('span'); s.className = 'fx'; s.textContent = txt; if (col) s.style.color = col; tiles[i].appendChild(s); setTimeout(() => s.remove(), 700); }
+  function hud() { $('#smScore').textContent = st.score; $('#smTime').textContent = Math.max(0, Math.ceil(st.time)); $('#smMiss').textContent = st.miss; }
+  function start() {
+    cancelAnimationFrame(raf);
+    st = { running:true, score:0, miss:0, smashed:0, time:30, t:0, next:.5, slots:Array(SVCS.length).fill(null), last:performance.now() };
+    tiles.forEach((_, i) => setTile(i, null)); hud();
+    raf = requestAnimationFrame(loop);
+  }
+  function loop(now) {
+    const dt = Math.min(.05, (now - st.last) / 1000); st.last = now;
+    st.t += dt; st.time -= dt; st.next -= dt;
+    st.slots.forEach((s, i) => { if (s && st.t > s.until) { if (s.kind === 'bug') { st.miss++; fx(i, 'escaped', '#fb7185'); } st.slots[i] = null; setTile(i, null); } });
+    if (st.next <= 0) {
+      const free = st.slots.map((s, i) => s ? -1 : i).filter(i => i >= 0);
+      if (free.length) {
+        const i = pick(free), kind = Math.random() < .12 ? 'gold' : 'bug';
+        st.slots[i] = { kind, until: st.t + Math.max(.6, 1.25 - st.t * .02) };
+        setTile(i, kind);
+      }
+      st.next = Math.max(.28, .75 - st.t * .015);
+    }
+    hud();
+    if (st.time <= 0) return end();
+    raf = requestAnimationFrame(loop);
+  }
+  grid.addEventListener('pointerdown', e => {
+    const b = e.target.closest('.svc'); if (!b || !st || !st.running) return;
+    const i = +b.dataset.i, s = st.slots[i];
+    if (!s) return;
+    const pts = s.kind === 'gold' ? 25 : 10;
+    st.score += pts; if (s.kind === 'bug') st.smashed++;
+    st.slots[i] = null; setTile(i, null); fx(i, `+${pts}`);
+    b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit');
+    hud();
+  });
+  function end() {
+    st.running = false; cancelAnimationFrame(raf);
+    tiles.forEach((_, i) => setTile(i, null));
+    if (st.smashed >= 20) unlock('hunter');
+    finishGame('smash', st.score, Math.min(50, Math.round(st.score / 6)), `Score <b>${st.score}</b> · ${st.smashed} bugs smashed · ${st.miss} escaped`);
+  }
+  function stop() { if (st && st.running) { st.running = false; cancelAnimationFrame(raf); tiles.forEach((_, i) => setTile(i, null)); $('#smashOv').hidden = false; } }
+  return { start, stop };
+})();
+
+/* ---- Stack Match ---- */
+games.match = (() => {
+  const PAIRS = [
+    ['NestJS', 'ARIUS: Java/Groovy → Node migration'],
+    ['Terraform', 'ACF: infrastructure & CI/CD automation'],
+    ['React', "M&M's: design-your-own candy UI"],
+    ['WebRTC', 'Sanad: audio & video calls'],
+    ['Socket.IO', 'HandyforAll: live tasker tracking'],
+    ['Redis', 'TCS: database & cache tuning']
+  ];
+  const grid = $('#mGrid');
+  let st = null, timer = 0;
+  function start() {
+    clearInterval(timer);
+    const cards = PAIRS.flatMap((p, i) => [{ id: i, txt: p[0], k: 'tech' }, { id: i, txt: p[1], k: 'proj' }]);
+    for (let i = cards.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cards[i], cards[j]] = [cards[j], cards[i]]; }
+    grid.innerHTML = cards.map((c, i) => `<button class="card" data-id="${c.id}" data-i="${i}" aria-label="Hidden card"><div class="in3d"><div class="f">?</div><div class="b ${c.k}">${c.txt}</div></div></button>`).join('');
+    st = { running:true, open:[], moves:0, pairs:0, t0:Date.now(), lock:false };
+    hud();
+    timer = setInterval(hud, 500);
+  }
+  function hud() { if (!st) return; $('#mMoves').textContent = st.moves; $('#mPairs').textContent = st.pairs; $('#mTime').textContent = Math.round((Date.now() - st.t0) / 1000); }
+  grid.addEventListener('click', e => {
+    const c = e.target.closest('.card');
+    if (!c || !st || !st.running || st.lock || c.classList.contains('flip') || c.classList.contains('done')) return;
+    c.classList.add('flip'); c.setAttribute('aria-label', $('.b', c).textContent);
+    st.open.push(c);
+    if (st.open.length < 2) return;
+    st.moves++;
+    const [a, b] = st.open; st.open = [];
+    if (a.dataset.id === b.dataset.id) {
+      a.classList.add('done'); b.classList.add('done'); st.pairs++;
+      if (st.pairs === PAIRS.length) end();
+    } else {
+      st.lock = true;
+      setTimeout(() => { a.classList.remove('flip'); b.classList.remove('flip'); a.setAttribute('aria-label', 'Hidden card'); b.setAttribute('aria-label', 'Hidden card'); st.lock = false; }, 750);
+    }
+    hud();
+  });
+  function end() {
+    st.running = false; clearInterval(timer); hud();
+    const secs = Math.round((Date.now() - st.t0) / 1000);
+    if (st.moves <= 9) unlock('memory');
+    const b = clamp(50 - Math.max(0, st.moves - 6) * 4, 10, 50);
+    setTimeout(() => finishGame('match', st.moves, b, `Solved in <b>${st.moves}</b> moves · ${secs}s`), 600);
+  }
+  function stop() { if (st && st.running) { st.running = false; clearInterval(timer); $('#matchOv').hidden = false; } }
+  return { start, stop };
+})();
+
+$('#copyEmail').addEventListener('click', () => {
+  const sel = () => { const r = document.createRange(); r.selectNodeContents($('#email')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('✉', 'Email selected, press copy', 'CLIPBOARD'); };
+  try { navigator.clipboard.writeText($('#email').textContent).then(() => toast('✉', 'Email copied', 'CLIPBOARD'), sel); }
+  catch (e) { sel(); }
+});
+$('#resetBtn').addEventListener('click', () => {
+  save = { best:{ catcher:0, smash:0, match:0 }, ach:{} }; persist();
+  renderBest(); renderPower(); toast('↺', 'Arcade progress reset', 'RESET');
+});
+
+/* ================= INIT ================= */
+renderBest();
+renderAch();
+setTimeout(() => renderPower(true), 350);
+})();
+</script>
+</body>
+</html>
