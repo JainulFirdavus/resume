@@ -14,8 +14,27 @@ An interactive, game-style resume for **Mohamed Jainul Firdavus**, Full Stack De
   - Stack Match: pair each technology with the project where it was used.
 - **Achievements and strength report:** a final rank with the full score breakdown.
 
-## Run it
+## Build
 
-It's a single static file with no build step and no dependencies. Open `index.html` in a browser, or host it with GitHub Pages: go to **Settings → Pages**, choose **Deploy from a branch**, and select `main` / root.
+No dependencies. Needs Node 18+.
+
+```bash
+npm run build     # copies the site into dist/
+npm start         # serves dist/ locally
+```
+
+## Deploy on Render
+
+**Option A, Blueprint:** in Render choose **New → Blueprint**, then pick this repo. `render.yaml` sets everything up.
+
+**Option B, Static Site:** in Render choose **New → Static Site**, pick this repo, and set:
+
+| Setting | Value |
+|---|---|
+| Branch | `main` |
+| Build Command | `npm run build` |
+| Publish Directory | `dist` |
+
+Every push to `main` redeploys automatically.
 
 Arcade progress is saved in the visitor's own browser (localStorage).
